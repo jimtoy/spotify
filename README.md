@@ -41,6 +41,41 @@ You can also configure these in the `application.properties` file.
 mvn spring-boot:run
 ```
 
+## Docker 
+
+# Build the image
+docker compose build
+
+# Start the container
+docker compose up -d
+
+# View logs
+docker compose logs -f
+
+# Stop the container
+docker compose down
+
+
+## Useful Commands
+# View container logs
+docker compose logs -f
+
+# Check container status
+docker compose ps
+
+# View container metrics
+docker stats
+
+# Enter container shell
+docker compose exec spotify-oauth sh
+
+# Check container health
+docker inspect spotify-oauth | grep -A 10 "Health"
+
+# Backup container data (if needed)
+docker compose run --rm spotify-oauth tar czf /backup/backup.tar.gz /data
+
+
 4. Open a browser and navigate to `http://localhost:8080`
 
 ## API Endpoints
