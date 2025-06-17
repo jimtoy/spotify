@@ -12,19 +12,34 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "oauth")
 public class AuthConfig {
-    
+
     /**
      * The client ID for OAuth authentication
      */
     private String clientId;
-    
+
     /**
      * The client secret for OAuth authentication
      */
     private String clientSecret;
-    
+
     /**
      * The token URL for OAuth authentication
      */
     private String tokenUrl;
+
+    /**
+     * The authorization URL for OAuth authentication
+     */
+    private String authorizationUrl;
+
+    /**
+     * The redirect URI for OAuth authentication
+     */
+    private String redirectUri;
+
+    /**
+     * The scopes for OAuth authentication
+     */
+    private String scopes;
 }

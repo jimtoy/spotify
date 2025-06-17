@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import toy.jim.personal.spotify.model.SpotifyShowsResponse;
 import toy.jim.personal.spotify.model.SpotifyUser;
 import toy.jim.personal.spotify.service.UserServer;
 
@@ -32,4 +33,16 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+    @GetMapping("/tracks")
+    public ResponseEntity<SpotifyShowsResponse> getUserTracks() {
+        SpotifyShowsResponse user = userServer.getTracks();
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

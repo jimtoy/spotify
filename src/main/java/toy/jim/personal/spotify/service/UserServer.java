@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import toy.jim.personal.spotify.config.SpotifyConfig;
+import toy.jim.personal.spotify.model.SpotifyShowsResponse;
 import toy.jim.personal.spotify.model.SpotifyUser;
 
 @Slf4j
@@ -20,6 +21,11 @@ public class UserServer {
      * @return The Spotify user profile as a SpotifyUser object
      */
     public SpotifyUser getUser() {
-        return oAuthService.getSpotifyUser(spotifyConfig.getUserUrl() + "12120901379");
+        return oAuthService.getSpotifyUser("https://api.spotify.com/v1/me");
     }
+
+    public SpotifyShowsResponse getTracks(){
+        return oAuthService.getSpotifyTracks("https://api.spotify.com/v1/me/top/artists");
+    }
+
 }

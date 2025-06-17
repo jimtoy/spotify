@@ -4,24 +4,36 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * Record representing a Spotify user profile.
+ * Record representing a paginated response of shows from the Spotify API.
  * Based on the JSON structure returned by the Spotify API.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record SpotifyUser(
-    String display_name,
-    ExternalUrls external_urls,
-    Followers followers,
+public record SpotifyShowsResponse(
     String href,
-    String id,
-    List<Image> images,
-    String type,
-    String uri,
-    String country,
-    String email,
-    ExplicitContent explicit_content,
-    String product
+    int limit,
+    String next,
+    int offset,
+    String previous,
+    int total,
+    List<Item> items
 ) {
+    /**
+     * Record representing an item in the shows response.
+     */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Item(
+        ExternalUrls external_urls,
+        Followers followers,
+        List<String> genres,
+        String href,
+        String id,
+        List<Image> images,
+        String name,
+        int popularity,
+        String type,
+        String uri
+    ) {}
+
     /**
      * Record representing external URLs for a Spotify entity.
      */
@@ -47,14 +59,5 @@ public record SpotifyUser(
         String url,
         int height,
         int width
-    ) {}
-
-    /**
-     * Record representing explicit content settings for a Spotify user.
-     */
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ExplicitContent(
-        boolean filter_enabled,
-        boolean filter_locked
     ) {}
 }
