@@ -81,32 +81,31 @@ public class OAuthController {
     /**
      * Handles the callback from Spotify after authorization.
      * Exchanges the authorization code for an access token.
-     * 
-     * @param code The authorization code from Spotify
+     *
+     * @param code  The authorization code from Spotify
      * @param state The state parameter to validate the request
      * @param error Any error that occurred during authorization
      * @return A response with the access token or an error message
      */
     @GetMapping("/callback")
-    public ResponseEntity<Map<String, String>> callback(
+    public RedirectView callback(
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String state,
             @RequestParam(required = false) String error) {
 
-        Map<String, String> response = new HashMap<>();
 
         // Check for errors from Spotify
         if (error != null) {
             log.error("Error during Spotify authorization: {}", error);
-            response.put("error", error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return new RedirectView("/?error=" + error);
+
         }
 
         // Validate state parameter to prevent CSRF attacks
         if (!oAuthService.validateState(state)) {
             log.error("Invalid state parameter in callback");
-            response.put("error", "Invalid state parameter");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return new RedirectView("/?error=invalid_state");
+
         }
 
         // Exchange the authorization code for an access token
@@ -116,17 +115,17 @@ public class OAuthController {
 
             if (accessToken != null) {
                 log.info("Successfully obtained access token");
-                response.put("access_token", accessToken);
-                return ResponseEntity.ok(response);
+                return new RedirectView("/?success=true");
+
             } else {
                 log.error("Failed to exchange authorization code for token");
-                response.put("error", "Failed to obtain access token");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                return new RedirectView("/?error=token_exchange_failed");
+
             }
         } else {
             log.error("No authorization code received from Spotify");
-            response.put("error", "No authorization code received");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return new RedirectView("/?error=no_code");
+
         }
     }
 }

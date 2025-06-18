@@ -1,5 +1,25 @@
 // Main React application for Spotify User Profile
 
+// LoginButton component to handle authentication
+const LoginButton = () => {
+    const handleLogin = () => {
+        window.location.href = '/api/oauth/authorize';
+    };
+
+    return (
+        <div className="login-container text-center">
+            <h2>Welcome to Spotify User Profile</h2>
+            <p>Please log in with your Spotify account to view your profile and top tracks.</p>
+            <button 
+                onClick={handleLogin} 
+                className="btn btn-success btn-lg mt-3"
+            >
+                Login with Spotify
+            </button>
+        </div>
+    );
+};
+
 // UserTracks component to display user's top tracks
 const UserTracks = () => {
     const [tracks, setTracks] = React.useState(null);
@@ -8,9 +28,13 @@ const UserTracks = () => {
 
     React.useEffect(() => {
         // Fetch user tracks data from the Spring Boot backend
+        // This will only be called when a bearer token exists (as checked by the App component)
         fetch('/api/users/tracks')
             .then(response => {
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Authentication error. Please log in again.');
+                    }
                     throw new Error('Failed to fetch tracks');
                 }
                 return response.json();
@@ -102,9 +126,13 @@ const UserProfile = () => {
 
     React.useEffect(() => {
         // Fetch user profile data from the Spring Boot backend
+        // This will only be called when a bearer token exists (as checked by the App component)
         fetch('/api/users/profile')
             .then(response => {
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Authentication error. Please log in again.');
+                    }
                     throw new Error('Failed to fetch user profile');
                 }
                 return response.json();
@@ -196,9 +224,42 @@ const UserProfile = () => {
 
 // Main App component
 const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
+
+    // Check if bearer token exists on component mount
+    React.useEffect(() => {
+        fetch('/api/oauth/bearer-token')
+            .then(response => {
+                if (response.ok) {
+                    setIsAuthenticated(true);
+                } else {
+                    setIsAuthenticated(false);
+                }
+            })
+            .catch(err => {
+                console.error('Error checking authentication:', err);
+                setIsAuthenticated(false);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, []);
+
+    // Show loading spinner while checking authentication
+    if (loading) {
+        return (
+            <div className="loading-spinner">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="app-container">
-            <UserProfile />
+            {isAuthenticated ? <UserProfile /> : <LoginButton />}
         </div>
     );
 };
